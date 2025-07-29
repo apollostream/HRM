@@ -127,7 +127,21 @@ class Attention(nn.Module):
             query, key = apply_rotary_pos_emb(query, key, cos, sin)
 
         # flash attn
-        attn_output = flash_attn_func(q=query, k=key, v=value, causal=self.causal)
+        #attn_output = flash_attn_func(q=query, k=key, v=value, causal=self.causal)
+        # Check if Flash Attention is supported
+        try:
+            # Check GPU compute capability
+            if torch.cuda.get_device_capability()[0] >= 8:  # Ampere or newer
+                attn_output = flash_attn_func(q=query, k=key, v=value, causal=self.causal)
+            else:
+                raise RuntimeError("GPU too old for Flash Attention")
+        except (RuntimeError, ImportError):
+            # Fallback to regular attention
+            attn_output = torch.nn.functional.scaled_dot_product_attention(
+                query, key, value, 
+                is_causal=self.causal,
+                dropout_p=0.0
+            )
         if isinstance(attn_output, tuple):  # fa2 and fa3 compatibility
             attn_output = attn_output[0]
 
