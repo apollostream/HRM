@@ -22,6 +22,10 @@ from puzzle_dataset import PuzzleDataset, PuzzleDatasetConfig, PuzzleDatasetMeta
 from utils.functions import load_model_class, get_model_source_path
 from models.sparse_embedding import CastedSparseEmbeddingSignSGD_Distributed
 
+# Monkey patch to replace adam_atan2 with AdamW
+import torch.optim
+#import adam_atan2
+adam_atan2.AdamAtan2 = torch.optim.AdamW
 
 class LossConfig(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(extra='allow')
