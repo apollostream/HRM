@@ -24,8 +24,8 @@ from models.sparse_embedding import CastedSparseEmbeddingSignSGD_Distributed
 
 # Monkey patch to replace adam_atan2 with AdamW
 import torch.optim
-import adam_atan2
-adam_atan2.AdamAtan2 = torch.optim.AdamW
+#import adam_atan2
+#adam_atan2.AdamAtan2 = torch.optim.AdamW
 AdamATan2 = torch.optim.AdamW
 
 class LossConfig(pydantic.BaseModel):
